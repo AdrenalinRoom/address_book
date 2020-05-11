@@ -1,5 +1,7 @@
 from Person import Person
 from Address_book import AddressBook
+import pickle
+import os
 
 
 def get_person_info():
@@ -11,16 +13,22 @@ def get_person_info():
     return person
 
 
-# тестовые пользователи, которые добавляются в адресную книгу
-person1 = Person("Иван", "Иванов", "8 929 999 99 99", "1 street")
-person2 = Person("Федор", "Федоров", "8 929 999 99 98", "1 street")
-person3 = Person("Вася", "Васильев", "8 929 999 99 97", "1 street")
-person4 = Person("Петя", "Васильев", "8 929 999 99 96", "1 street")
-book = AddressBook()
-book.append(person1)
-book.append(person2)
-book.append(person3)
-book.append(person4)
+def save_address_book_to_file(address_book):
+    with open("address_book.txt", 'wb') as f:
+        pickle.dump(address_book, f)
+        f.flush()
+        f.close()
+
+
+def read_address_book_from_file():
+    file_address_book = open("address_book.txt", 'rb')
+    is_file_empty = os.path.getsize("address_book.txt") == 0
+    if is_file_empty:
+        book = AddressBook()
+    else:
+        book = pickle.load(file_address_book)
+    file_address_book.close()
+    return book
 
 
 def main():
@@ -31,17 +39,13 @@ def main():
         -- Введите 3 чтобы увидеть все записи в адресной книге
         -- Введите 4 чтобы выйти из программы
         """)
-
-    # раскомминтируйте следующую строку кода и закомминтируете блок с создением тестовых пользователей, если хотите
-    # пустую адресную книгу
-
-    # book = AddressBook()
+    book = read_address_book_from_file()
 
     while True:
         text = input("Введите ваш выбор: \n")
         if text == "1":
             book.append(get_person_info())
-        # будет удалять первый найденный контакт с указанной фамилией
+            save_address_book_to_file(book)
         elif text == "2":
             print("В данной адресной книге, найдите номер пользователя, которого хотите удалить\n")
             book.display_address_book()
@@ -49,6 +53,7 @@ def main():
             index_to_delete = int(user_input)
             if len(book) >= index_to_delete > 0:
                 deleted = book.pop(index_to_delete - 1)
+                save_address_book_to_file(book)
                 print("Пользователь {} {} удален".format(deleted.get_second_name(), deleted.get_first_name()))
             else:
                 print("Такого пользователя не существует")
