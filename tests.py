@@ -1,5 +1,5 @@
-from Person import Person
-from Address_book import AddressBook
+from person import Person
+from address_book import AddressBook
 
 person1 = Person("Иван", "Иванов", "8 929 999 99 99", "1 street")
 assert person1.get_first_name() == "Иван"
