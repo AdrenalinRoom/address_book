@@ -1,32 +1,35 @@
 from person import Person
 from address_book import AddressBook
-
-person1 = Person("Иван", "Иванов", "8 929 999 99 99", "1 street")
-assert person1.get_first_name() == "Иван"
-person2 = Person("Федор", "Федоров", "8 929 999 99 98", "1 street")
-
-book = AddressBook()
-
-book.append(person1)
-assert len(book) == 1
-
-book.append(person2)
-assert len(book) == 2
-
-book.remove(person1)
-assert person1 not in book
-
-book.display_address_book()
-
-person1.set_first_name("Васян")
-assert person1.get_first_name() == "Васян"
+import pytest
 
 
-# book.modify_person(person1)
-# assert person1.get_first_name() == "Ваня"
+@pytest.fixture()
+def setup():
+    person1 = Person("Иван", "Иванов", "8 929 999 99 99", "1 street")
+    return person1
 
-# person1.description()
-# person2.description()
+
+@pytest.mark.usefixtures("setup")
+class TestAB:
+    def test_create_person(self, setup):
+        assert setup.get_first_name() == "Иван"
+
+    def test_add_person_to_address_book(self, setup):
+        book = AddressBook()
+        book.append(setup)
+        assert len(book) == 1
+
+    def test_change_person_info(self, setup):
+        setup.set_first_name("Васян")
+        assert setup.get_first_name() == "Васян"
+
+    def test_delete_person_from_address_book(self, setup):
+        book = AddressBook()
+        book.append(setup)
+        book.remove(setup)
+        assert setup not in book
+
+
 
 
 
